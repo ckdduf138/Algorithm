@@ -13,3 +13,4 @@ ccw>0이 되었을 때만 스택에 넣어주면 된다.
 
 
 ![ConvexHull](https://user-images.githubusercontent.com/69779719/144611860-b4920428-c990-42ad-80be-a6613df05592.png)
+
