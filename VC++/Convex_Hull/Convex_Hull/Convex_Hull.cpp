@@ -23,12 +23,12 @@ struct pos
     long long x, y;
 };
 
-pos arr[PointCount];                       // 좌표를 담을 배열
+pos arr[PointCount];                // 좌표를 담을 배열
 pos last_point;                     // 마지막 점 좌표
 stack<pos> s;                       // 볼록 껍질 스택
 stack<pos> temp;                    // 볼록 껍질 TEMP 스택
-bool is_Thread_Running = false;     // 볼록 껍질 쓰레드가 실행중인지 체크
 HWND g_hWnd;                        // 현재 윈도우
+bool is_Thread_Running = false;     // 볼록 껍질 쓰레드가 실행중인지 체크
 
 // 전역 함수
 void Center_Screen(HWND window, DWORD style, DWORD exStyle);
