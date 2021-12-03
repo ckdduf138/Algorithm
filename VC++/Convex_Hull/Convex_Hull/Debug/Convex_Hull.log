@@ -1,14 +1,14 @@
 ﻿  Convex_Hull.cpp
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(227,89): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(227,73): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(227,57): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(227,41): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(242,47): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(242,38): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(247,45): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(247,36): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(321,43): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(321,29): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(322,33): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\chang_yeol\Project\Convex_Hull\Convex_Hull\Convex_Hull.cpp(322,23): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  Convex_Hull.vcxproj -> C:\chang_yeol\Project\Convex_Hull\Debug\Convex_Hull.exe
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(241,89): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(241,73): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(241,57): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(241,41): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(259,47): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(259,38): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(264,45): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(264,36): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(348,43): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(348,29): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(349,33): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Convex_Hull\Convex_Hull.cpp(349,23): warning C4244: '인수': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Convex_Hull.vcxproj -> C:\chang_yeol\github\Algorithm\VC++\Convex_Hull\Debug\Convex_Hull.exe

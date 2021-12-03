@@ -16,22 +16,22 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
-// 전역 함수
-void Center_Screen(HWND window, DWORD style, DWORD exStyle);
-DWORD WINAPI Convex_Hull(LPVOID lpParam);
-
+// X,Y 좌표를 담을 구조체
 struct pos
 {
     long long x, y;
 };
 
-pos arr[100];
-pos last_point;
-stack<pos> s;
-stack<pos> temp;
-bool Convex_flag = false;
-bool is_Thread_Running = false;
-HWND g_hWnd;
+pos arr[100];                       // 좌표를 담을 배열
+pos last_point;                     // 마지막 점 좌표
+stack<pos> s;                       // 볼록 껍질 스택
+stack<pos> temp;                    // 볼록 껍질 TEMP 스택
+bool is_Thread_Running = false;     // 볼록 껍질 쓰레드가 실행중인지 체크
+HWND g_hWnd;                        // 현재 윈도우
+
+// 전역 함수
+void Center_Screen(HWND window, DWORD style, DWORD exStyle);
+DWORD WINAPI Convex_Hull(LPVOID lpParam);
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -76,8 +76,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
-
-
 
 //
 //  함수: MyRegisterClass()
@@ -133,16 +131,22 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+// 1) CCW(1, 2, 3) > 0 : 좌회전(Left Turn)
+// 2) CCW(1, 2, 3) < 0 : 우회전(Right Turn)
+// 3) CCW(1, 2, 3) = 0 : 3개의 노드가 일직선상에 있음
 long long ccw(pos a, pos b, pos c)
 {
     return (a.x * b.y + b.x * c.y + c.x * a.y) - (a.y * b.x + b.y * c.x + c.y * a.x);
 }
 
+// x좌표를 기준으로 오름차순 정렬
+// x좌표가 같다면 y좌표 기준으로 오름차순 정렬
 bool cmp1(const pos& a, const pos& b)
 {
     return a.x == b.x ? a.y < b.y : a.x < b.x;
 }
 
+//기준점을 기준으로 정렬
 bool cmp2(pos a, pos b) {
     return ccw(arr[0], a, b) > 0;
 }
@@ -161,9 +165,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
     case WM_CREATE:
     {
-
+        // 랜덤
         srand((unsigned int)time(NULL));
 
+        // 창 가운데 정렬
         Center_Screen(hWnd, WS_OVERLAPPEDWINDOW, WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
 
     }
@@ -188,14 +193,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_LBUTTONDOWN:
     {
+        // 쓰레드가 실행중이면 break
         if (is_Thread_Running == true) break;
+
         g_hWnd = hWnd;
         HDC hdc = GetDC(hWnd);
+
         InvalidateRect(hWnd, NULL, true);
 
+        // 초기화
         while (!s.empty()) s.pop();
         while (!temp.empty()) temp.pop();
 
+        // 랜덤으로 점 생성
         for (int idx = 0; idx < 100; idx++)
         {
             int x = (rand() % 1000) + 50;
@@ -204,12 +214,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             arr[idx].y = y;
         }
 
+        // 좌표가 작은 순으로 정렬
         sort(arr, arr + 100, cmp1);
         stable_sort(arr + 1, arr + 100, cmp2);
 
+        // 첫번째 점과 두번째 점 푸쉬
         s.push(arr[0]);
         s.push(arr[1]);
 
+        // 볼록 껍질 쓰레드 생성
         CreateThread(NULL, 0, Convex_Hull, NULL, 0, NULL);
     }
     break;
@@ -218,19 +231,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
+            // 점 브러쉬
             HBRUSH POINT = (HBRUSH)CreateSolidBrush(RGB(0, 0, 0));
             SelectObject(hdc, POINT);
 
-
+            // 점 그리기
             for (int idx = 0; idx < 100; idx++)
             {
                 Ellipse(hdc, arr[idx].x - 3, arr[idx].y - 3, arr[idx].x + 3, arr[idx].y + 3);
             }
 
+            // 점선 펜
             HPEN Pen = CreatePen(0, 3, RGB(64, 224, 208));
             SelectObject(hdc, Pen);
+            
+            
+            // 현재 temp(stack) 에 있는 점들 그리기 
             temp = s;
-
             bool flag = false;
 
             while (!temp.empty())
@@ -246,6 +263,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 temp.pop();
                 MoveToEx(hdc, point.x, point.y, NULL);
             }
+
 
             EndPaint(hWnd, &ps);
         }
@@ -295,32 +313,42 @@ DWORD WINAPI Convex_Hull(LPVOID lpParam)
 {
     HDC hdc = GetDC(g_hWnd);
     
+    // 쓰레드 실행중
     is_Thread_Running = true;
 
+    // 볼록 껍질
     for (int idx = 2; idx < 100; idx++) {
         while (s.size() > 1) {
+
             pos second = s.top();
             s.pop();
             pos first = s.top();
 
+            //좌회전 했으므로 두번째 점 푸쉬
             if (ccw(first, second, arr[idx]) > 0) {
                 s.push(second);
                 break;
             }
         }
+        //좌회전 했으므로 세번째 점 푸쉬
         s.push(arr[idx]);
+
+        // 마지막 점 갱신
         last_point = arr[idx];
 
+        // 현재 temp에 있는 점 그리기 (화면무효화)
         InvalidateRect(g_hWnd, NULL, true);
         Sleep(100);
 
     }
 
+    // 마지막 점과 시작 점 선분 그리기
     HPEN Pen = CreatePen(0, 3, RGB(64, 224, 208));
     SelectObject(hdc, Pen);
     MoveToEx(hdc, last_point.x, last_point.y, NULL);
     LineTo(hdc, arr[0].x, arr[0].y);
 
+    // 쓰레드 종료
     is_Thread_Running = false;
 
     ExitThread(0);
