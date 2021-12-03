@@ -10,6 +10,7 @@
 using namespace std;
 
 #define MAX_LOADSTRING 100
+#define PointCount 100
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -22,7 +23,7 @@ struct pos
     long long x, y;
 };
 
-pos arr[100];                       // 좌표를 담을 배열
+pos arr[PointCount];                       // 좌표를 담을 배열
 pos last_point;                     // 마지막 점 좌표
 stack<pos> s;                       // 볼록 껍질 스택
 stack<pos> temp;                    // 볼록 껍질 TEMP 스택
@@ -206,7 +207,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         while (!temp.empty()) temp.pop();
 
         // 랜덤으로 점 생성
-        for (int idx = 0; idx < 100; idx++)
+        for (int idx = 0; idx < PointCount; idx++)
         {
             int x = (rand() % 1000) + 50;
             int y = (rand() % 600) + 50;
@@ -215,8 +216,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
 
         // 좌표가 작은 순으로 정렬
-        sort(arr, arr + 100, cmp1);
-        stable_sort(arr + 1, arr + 100, cmp2);
+        sort(arr, arr + PointCount, cmp1);
+        stable_sort(arr + 1, arr + PointCount, cmp2);
 
         // 첫번째 점과 두번째 점 푸쉬
         s.push(arr[0]);
@@ -236,7 +237,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             SelectObject(hdc, POINT);
 
             // 점 그리기
-            for (int idx = 0; idx < 100; idx++)
+            for (int idx = 0; idx < PointCount; idx++)
             {
                 Ellipse(hdc, arr[idx].x - 3, arr[idx].y - 3, arr[idx].x + 3, arr[idx].y + 3);
             }
@@ -317,7 +318,7 @@ DWORD WINAPI Convex_Hull(LPVOID lpParam)
     is_Thread_Running = true;
 
     // 볼록 껍질
-    for (int idx = 2; idx < 100; idx++) {
+    for (int idx = 2; idx < PointCount; idx++) {
         while (s.size() > 1) {
 
             pos second = s.top();
@@ -347,6 +348,19 @@ DWORD WINAPI Convex_Hull(LPVOID lpParam)
     SelectObject(hdc, Pen);
     MoveToEx(hdc, last_point.x, last_point.y, NULL);
     LineTo(hdc, arr[0].x, arr[0].y);
+
+    // 볼록껍질 다각형 점 빨간색으로 그리기
+    Pen = CreatePen(0, 3, RGB(255, 0, 0));
+    SelectObject(hdc, Pen);
+    while (!s.empty())
+    {
+        pos curr = s.top();
+        s.pop();
+        for (int idx = 0; idx < PointCount; idx++)
+        {
+            Ellipse(hdc, curr.x - 3, curr.y - 3, curr.x + 3, curr.y + 3);
+        }
+    }
 
     // 쓰레드 종료
     is_Thread_Running = false;
