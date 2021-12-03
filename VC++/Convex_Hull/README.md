@@ -11,3 +11,4 @@ ccw>0이 되었을 때만 스택에 넣어주면 된다.
 1) CCW(1, 2, 3) > 0 : 좌회전 (Left Turn)
 2) CCW(1, 2, 3) < 0 : 우회전 (Right Turn)
 3) CCW(1, 2, 3) = 0 : 3개의 노드가 일직선상에 있음
+![ConvexHull](https://user-images.githubusercontent.com/69779719/144611860-b4920428-c990-42ad-80be-a6613df05592.png)
