@@ -11,8 +11,8 @@ using namespace std;
 
 #define MAX_LOADSTRING 100
 
-#define RECT_Start_X 300
-#define RECT_Start_Y 50
+#define RECT_Start_X 56
+#define RECT_Start_Y 30
 #define RECT_Width 15
 #define RECT_Height 15
 #define Wall 1
@@ -21,6 +21,7 @@ using namespace std;
 
 // 전역 함수;
 void maze_dfs(int curr_x, int curr_y);          // 미로 DFS
+void Center_Screen(HWND window, DWORD style, DWORD exStyle);
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -165,8 +166,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_GETMINMAXINFO: // 윈도우 크기 고정
+    {
+        ((MINMAXINFO*)lParam)->ptMaxTrackSize.x = 600;
+        ((MINMAXINFO*)lParam)->ptMaxTrackSize.y = 600;
+        ((MINMAXINFO*)lParam)->ptMinTrackSize.x = 600;
+        ((MINMAXINFO*)lParam)->ptMinTrackSize.y = 600;
+    }
+    break;
+
     case WM_CREATE:
     {
+        // 창 가운데 정렬
+        Center_Screen(hWnd, WS_OVERLAPPEDWINDOW, WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
+
 
         //초기 미로 생성
         for (int i = 0; i < 31; i++)
@@ -397,11 +410,23 @@ void maze_dfs(int curr_x, int curr_y) {
         // 현재 위치 RED 표시
         maze[curr_x + crush_dx[dir]][curr_y + crush_dy[dir]] = RED;
         InvalidateRect(g_hWnd, NULL, false);
-        Sleep(50);
+        Sleep(40);
         maze[nx][ny] = RED;
         InvalidateRect(g_hWnd, NULL, false);
-        Sleep(50);
+        Sleep(40);
 
         maze_dfs(nx, ny);
     }
+}
+
+
+// Window 화면 가운데 위치로 옮기는 함수
+void Center_Screen(HWND window, DWORD style, DWORD exStyle)
+{
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    RECT clientRect; GetClientRect(window, &clientRect);
+    int clientWidth = clientRect.right - clientRect.left;
+    int clientHeight = clientRect.bottom - clientRect.top;
+    SetWindowPos(window, NULL, screenWidth / 2 - clientWidth / 2, screenHeight / 2 - clientHeight / 2 - 40, clientWidth, clientHeight, 0);
 }
