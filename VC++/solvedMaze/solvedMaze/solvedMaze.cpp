@@ -6,12 +6,14 @@
 #include "time.h"
 #include <vector>
 #include <stack>
+#include <queue>
 
 using namespace std;
 
 #define MAX_LOADSTRING 100
 
-#define Maze_Size 31
+#define Window_Size 1000
+#define Maze_Size 51
 #define RECT_Start_X 56
 #define RECT_Start_Y 30
 #define RECT_Width 15
@@ -23,6 +25,9 @@ using namespace std;
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+
+// 미로가 그려져 있는 상태인지 CHECK
+bool isMazePaint = false;
 
 // direct
 int dx[4] = { 2,0,-2,0 };
@@ -47,7 +52,8 @@ HBRUSH TrackBrush = CreateSolidBrush(RGB(255, 192, 0));
 
 // 전역 함수:
 void Center_Screen(HWND window, DWORD style, DWORD exStyle);
-void maze_dfs(int curr_x, int curr_y);          // 미로 DFS
+void Maze_Dfs(int curr_x, int curr_y);          // 미로 DFS
+void Maze_Bfs(int start_x, int start_y);        // 미로 BFS
 void Create_Maze();                             // 미로 생성 함수
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
@@ -166,10 +172,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_GETMINMAXINFO: // 윈도우 크기 고정
     {
-        ((MINMAXINFO*)lParam)->ptMaxTrackSize.x = 600;
-        ((MINMAXINFO*)lParam)->ptMaxTrackSize.y = 600;
-        ((MINMAXINFO*)lParam)->ptMinTrackSize.x = 600;
-        ((MINMAXINFO*)lParam)->ptMinTrackSize.y = 600;
+        ((MINMAXINFO*)lParam)->ptMaxTrackSize.x = Window_Size;
+        ((MINMAXINFO*)lParam)->ptMaxTrackSize.y = Window_Size;
+        ((MINMAXINFO*)lParam)->ptMinTrackSize.x = Window_Size;
+        ((MINMAXINFO*)lParam)->ptMinTrackSize.y = Window_Size;
     }
     break;
     case WM_CREATE:
@@ -179,6 +185,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         // 미로 생성
         Create_Maze();
+        isMazePaint == true;
     }
     case WM_COMMAND:
         {
@@ -199,7 +206,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_LBUTTONDOWN:
         {
-            Create_Maze();
+            if (isMazePaint == false)
+            {
+                Create_Maze();
+            }
+            else
+            {
+                int x = LOWORD(lParam);
+                int y = HIWORD(lParam);
+
+                RECT is_checking_rect = { x,y,x + 1,y + 1 };
+                RECT garbage;
+
+                bool exit_flag = false;
+                for (int i = 0; i < Maze_Size; i++)
+                {
+                    for (int j = 0; j < Maze_Size; j++)
+                    {
+                        RECT rect = { RECT_Start_X + (RECT_Width * i),RECT_Start_Y + (RECT_Width * j), rect.left + RECT_Width,rect.top + RECT_Width };
+
+                        if (IntersectRect(&garbage, &rect, &is_checking_rect) && maze[i][j] == Road)
+                        {
+                            Maze_Bfs(i, j);
+                            exit_flag = true;
+                            break;
+                        }
+                    }
+                    if (exit_flag) break;
+                }
+
+            }
+
             InvalidateRect(hWnd, NULL, false);
         }
         break;
@@ -214,7 +251,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             for (int j = 0; j < Maze_Size; j++)
             {
-                if (visted[i][j] == true)
+                if (visted[i][j] == true && isMazePaint == false)
                 {
                     SelectObject(hdc, TrackPen);
                     SelectObject(hdc, TrackBrush);
@@ -326,45 +363,13 @@ void Create_Maze()
     // 랜덤으로 생성한 초기 X Y visted 체크
     visted[rand_length][rand_width] = true;
 
-    maze_dfs(rand_length, rand_width);
+    Maze_Dfs(rand_length, rand_width);
 
-    // visted를 tarck
-
-    for (int i = 0; i < Maze_Size; i++)
-    {
-        for (int j = 0; j < Maze_Size; j++)
-        {
-            visted[i][j] = 0;
-        }
-    }
-
-    stack<pair<int,int>> s;
-    s.push({ track[29][29] });
-    visted[29][29] = true;
-
-    while (!s.empty())
-    {
-        pair<int, int> curr = s.top();
-
-        if (curr.first == 0 && curr.second == 0)
-        {
-            while (!s.empty()) 
-            {
-                s.pop();
-            }
-            break;
-        }
-
-        s.pop();
-        visted[curr.first][curr.second] = 1;
-
-        pair<int,int> next_curr = track[curr.first][curr.second];
-        s.push({ next_curr });
-    }
+    isMazePaint = true;
 }
 
 // 미로 DFS
-void maze_dfs(int curr_x, int curr_y) {
+void Maze_Dfs(int curr_x, int curr_y) {
 
     // 현재 위치 방문 체크
     visted[curr_x][curr_y] = true;
@@ -390,8 +395,8 @@ void maze_dfs(int curr_x, int curr_y) {
         int ny = curr_y + dy[dir];
 
         // Maze 이탈 조건 
-        if (nx < 0 || nx >= 31 || ny < 0 || ny >= 31)	continue;
-        if (visted[nx][ny])							    continue;
+        if (nx < 0 || nx >= Maze_Size || ny < 0 || ny >= Maze_Size) 	continue;
+        if (visted[nx][ny])							                    continue;
 
         // 이탈 하지 않음
         visted[nx][ny] = true;
@@ -399,10 +404,92 @@ void maze_dfs(int curr_x, int curr_y) {
         // 현재 위치 RED 표시
         maze[curr_x + crush_dx[dir]][curr_y + crush_dy[dir]] = Road;
 
-        // track
-        track[curr_x + crush_dx[dir]][curr_y + crush_dy[dir]] = { curr_x,curr_y };
-        track[nx][ny] = { curr_x + crush_dx[dir] ,curr_y + crush_dy[dir] };
-
-        maze_dfs(nx, ny);
+        Maze_Dfs(nx, ny);
     }
+}
+
+void Maze_Bfs(int start_x, int start_y)
+{
+    // visted 초기화
+    for (int i = 0; i < Maze_Size; i++)
+    {
+        for (int j = 0; j < Maze_Size; j++)
+        {
+            visted[i][j] = false;
+        }
+    }
+
+    // 시작위치가 마지막인 경우
+    if (start_x == Maze_Size - 2 && start_y == Maze_Size - 2)
+    {
+        isMazePaint = false;
+        visted[start_x][start_y] = true;
+        return;
+    }
+
+    // BFS
+    queue<pair<int, int>> q;
+    q.push({ start_x, start_y });
+
+    while (!q.empty())
+    {
+        pair<int, int> curr = q.front();
+        q.pop();
+
+        for (int dir = 0; dir < 4; dir++)
+        {
+            int nx = curr.first + crush_dx[dir];
+            int ny = curr.second + crush_dy[dir];
+
+            // Maze 이탈 조건 
+            if (nx < 0 || nx >= Maze_Size || ny < 0 || ny >= Maze_Size)     continue;
+            if (maze[nx][ny] == Wall || visted[nx][ny] == true)	            continue;
+
+            visted[nx][ny] = true;
+
+            // track
+            track[nx][ny] = curr;
+
+            q.push({ nx,ny });
+        }
+    }
+
+    // visted 초기화
+    for (int i = 0; i < Maze_Size; i++)
+    {
+        for (int j = 0; j < Maze_Size; j++)
+        {
+            visted[i][j] = false;
+        }
+    }
+
+    stack<pair<int, int>> s;
+    int destination_x = Maze_Size - 2;
+    int destination_y = Maze_Size - 2;
+
+    s.push({ track[destination_x][destination_y] });
+
+    visted[track[destination_x][destination_y].first][track[destination_x][destination_y].second] = true;
+
+    while (!s.empty())
+    {
+        pair<int, int> curr = s.top();
+        s.pop();
+
+        if (curr.first == start_x && curr.second == start_y)
+        {
+            while (!s.empty()) s.pop();
+            break;
+        }
+
+        visted[curr.first][curr.second] = true;
+
+        pair<int, int> next = track[curr.first][curr.second];
+        s.push(next);
+    }
+
+    visted[start_x][start_y] = true;
+    visted[Maze_Size - 2][Maze_Size - 2] = true;
+
+    isMazePaint = false;
 }
