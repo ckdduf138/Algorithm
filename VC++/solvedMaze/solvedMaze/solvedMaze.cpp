@@ -11,6 +11,7 @@ using namespace std;
 
 #define MAX_LOADSTRING 100
 
+#define Maze_Size 31
 #define RECT_Start_X 56
 #define RECT_Start_Y 30
 #define RECT_Width 15
@@ -30,8 +31,9 @@ int crush_dx[4] = { 1,0,-1,0 };
 int crush_dy[4] = { 0,1,0,-1 };
 
 // maze vector
-vector<vector<int>> maze(31, vector<int>(31));
-vector<vector<bool>> visted(31, vector<bool>(31));
+vector<vector<int>> maze(Maze_Size, vector<int>(Maze_Size));
+vector<vector<bool>> visted(Maze_Size, vector<bool>(Maze_Size));
+vector<vector<pair<int, int>>> track(Maze_Size, vector<pair<int, int>>(Maze_Size));
 
 // brush pen
 HPEN WallPen = CreatePen(0, 0, RGB(153, 153, 255));
@@ -39,6 +41,9 @@ HBRUSH WallBrush = CreateSolidBrush(RGB(153, 153, 255));
 
 HPEN RoadPen = CreatePen(0, 0, RGB(192, 192, 192));
 HBRUSH RoadBrush = CreateSolidBrush(RGB(192, 192, 192));
+
+HPEN TrackPen = CreatePen(0, 0, RGB(255, 192, 0));
+HBRUSH TrackBrush = CreateSolidBrush(RGB(255, 192, 0));
 
 // 전역 함수:
 void Center_Screen(HWND window, DWORD style, DWORD exStyle);
@@ -205,11 +210,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
 
-        for (int i = 0; i < 31; i++)
+        for (int i = 0; i < Maze_Size; i++)
         {
-            for (int j = 0; j < 31; j++)
+            for (int j = 0; j < Maze_Size; j++)
             {
-                if (maze[i][j] == Wall) 
+                if (visted[i][j] == true)
+                {
+                    SelectObject(hdc, TrackPen);
+                    SelectObject(hdc, TrackBrush);
+                }
+                else if (maze[i][j] == Wall) 
                 {
                     SelectObject(hdc, WallPen);
                     SelectObject(hdc, WallBrush);
@@ -273,9 +283,9 @@ void Center_Screen(HWND window, DWORD style, DWORD exStyle)
 void Create_Maze()
 {
     // 초기화
-    for (int i = 0; i < 31; i++)
+    for (int i = 0; i < Maze_Size; i++)
     {
-        for (int j = 0; j < 31; j++)
+        for (int j = 0; j < Maze_Size; j++)
         {
             maze[i][j] = 0;
             visted[i][j] = 0;
@@ -283,9 +293,9 @@ void Create_Maze()
     }
 
     //초기 미로 생성
-    for (int i = 0; i < 31; i++)
+    for (int i = 0; i < Maze_Size; i++)
     {
-        for (int j = 0; j < 31; j++)
+        for (int j = 0; j < Maze_Size; j++)
         {
             if (i % 2 == 0 && j % 2 == 0) {
                 maze[i][j] = Wall;
@@ -309,14 +319,48 @@ void Create_Maze()
 
     // 랜덤으로 위치 설정
     do {
-        rand_length = rand() % 31;
-        rand_width = rand() % 31;
+        rand_length = rand() % Maze_Size;
+        rand_width = rand() % Maze_Size;
     } while (rand_length % 2 == 0 || rand_width % 2 == 0);
 
     // 랜덤으로 생성한 초기 X Y visted 체크
     visted[rand_length][rand_width] = true;
 
     maze_dfs(rand_length, rand_width);
+
+    // visted를 tarck
+
+    for (int i = 0; i < Maze_Size; i++)
+    {
+        for (int j = 0; j < Maze_Size; j++)
+        {
+            visted[i][j] = 0;
+        }
+    }
+
+    stack<pair<int,int>> s;
+    s.push({ track[29][29] });
+    visted[29][29] = true;
+
+    while (!s.empty())
+    {
+        pair<int, int> curr = s.top();
+
+        if (curr.first == 0 && curr.second == 0)
+        {
+            while (!s.empty()) 
+            {
+                s.pop();
+            }
+            break;
+        }
+
+        s.pop();
+        visted[curr.first][curr.second] = 1;
+
+        pair<int,int> next_curr = track[curr.first][curr.second];
+        s.push({ next_curr });
+    }
 }
 
 // 미로 DFS
@@ -354,6 +398,10 @@ void maze_dfs(int curr_x, int curr_y) {
 
         // 현재 위치 RED 표시
         maze[curr_x + crush_dx[dir]][curr_y + crush_dy[dir]] = Road;
+
+        // track
+        track[curr_x + crush_dx[dir]][curr_y + crush_dy[dir]] = { curr_x,curr_y };
+        track[nx][ny] = { curr_x + crush_dx[dir] ,curr_y + crush_dy[dir] };
 
         maze_dfs(nx, ny);
     }
