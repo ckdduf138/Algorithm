@@ -13,7 +13,7 @@ BFS는 상하좌우 탐색하며 매 순간 출발지로부터 최선(최소거�
 1. 미로 생성
 <img src="https://user-images.githubusercontent.com/69779719/174023636-c5ff02f9-dae3-4f28-934e-28507dbe522f.png" width="400" height="400"/>
 
-3. 시작 위치 마우스 클릭시 시작위치부터 도착지점까지 최적의 경로 탐색
+2. 시작 위치 마우스 클릭시 시작위치부터 도착지점까지 최적의 경로 탐색
 <img src="https://user-images.githubusercontent.com/69779719/174023625-535d07bd-e4df-4bb4-97e4-340ed570eab7.png" width="400" height="400"/>
 
 <h3> 사용기술 </h3> <hr>
