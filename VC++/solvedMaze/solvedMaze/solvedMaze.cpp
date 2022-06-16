@@ -12,10 +12,11 @@ using namespace std;
 
 #define MAX_LOADSTRING 100
 
-#define Window_Size 1000
-#define Maze_Size 51
-#define RECT_Start_X 56
-#define RECT_Start_Y 30
+#define Window_Size_X 902
+#define Window_Size_Y 944
+#define Maze_Size 59
+#define RECT_Start_X 0
+#define RECT_Start_Y 0
 #define RECT_Width 15
 #define RECT_Height 15
 #define Wall 1
@@ -172,10 +173,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_GETMINMAXINFO: // 윈도우 크기 고정
     {
-        ((MINMAXINFO*)lParam)->ptMaxTrackSize.x = Window_Size;
-        ((MINMAXINFO*)lParam)->ptMaxTrackSize.y = Window_Size;
-        ((MINMAXINFO*)lParam)->ptMinTrackSize.x = Window_Size;
-        ((MINMAXINFO*)lParam)->ptMinTrackSize.y = Window_Size;
+        ((MINMAXINFO*)lParam)->ptMaxTrackSize.x = Window_Size_X;
+        ((MINMAXINFO*)lParam)->ptMaxTrackSize.y = Window_Size_Y;
+        ((MINMAXINFO*)lParam)->ptMinTrackSize.x = Window_Size_X;
+        ((MINMAXINFO*)lParam)->ptMinTrackSize.y = Window_Size_Y;
     }
     break;
     case WM_CREATE:
