@@ -7,56 +7,34 @@ using namespace std;
 int dx[8] = { 0, 1, 1, 1, 0, -1, -1, -1 };
 int dy[8] = { -1, -1, 0, 1, 1, 1, 0, -1 };
 
-vector<string> board;
+char board[5][5];
 
-struct info {
-	int x;
-	int y;
-	int idx;
-};
-
-bool dfs(int i, int j, string word)
+bool dfs(int i, int j, const string& word)
 {
-	stack<info> s;
+	if (i < 0 || i >= 5 || j < 0 || j >= 5)	return false;
+	if (board[i][j] != word[0])				return false;
 
-	s.push({ i,j,0 });
+	if (word.size() == 1)					return true;
 
-	while (!s.empty())
+	for (int dir = 0; dir < 8; dir++)
 	{
-		info curr = s.top();
-		s.pop();
+		int nx = i + dx[dir];
+		int ny = j + dy[dir];
 
-		//cout << board[curr.x][curr.y] << "\n";
-
-		for (int dir = 0; dir < 8; dir++)
-		{
-			int nx = curr.x + dx[dir];
-			int ny = curr.y + dy[dir];
-			int nIdx = curr.idx + 1;
-
-			if (nx < 0 || nx >= 5 || ny < 0 || ny >= 5)				continue;
-			if (board[nx][ny] != word[nIdx])						continue;
-
-			if (nIdx == word.size() - 1) return true;
-
-			s.push({ nx,ny,nIdx });
-		}
+		if (dfs(nx, ny, word.substr(1))) return true;
 	}
 
 	return false;
 }
 
-string find(string word)
+string find(const string& word)
 {
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			if (board[i][j] == word[0])
-			{
-				bool isTrue = dfs(i, j, word);
-				if (isTrue == true) return "YES";
-			}
+			bool isTrue = dfs(i, j, word);
+			if (isTrue == true) return "YES";
 		}
 	}
 
@@ -67,13 +45,15 @@ void input()
 {
 	for (int i = 0; i < 5; i++)
 	{
-		string s;	cin >> s;
-		board.push_back(s);
+		for (int j = 0; j < 5; j++)
+		{
+			cin >> board[i][j];
+		}
 	}
 
 	int n;	cin >> n;
 
-	for (int i = 0; i < n; i++)
+	while (n--)
 	{
 		string word;	cin >> word;
 
@@ -98,7 +78,7 @@ int main()
 
 // input
 /*
-1
+3
 URLPM
 XPRET
 GIAET
