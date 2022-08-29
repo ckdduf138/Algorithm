@@ -11,33 +11,33 @@ int main()
 	while (c--)
 	{
 		// n: 연장을 대여할 수 있는 날들의 수
-		// l:이미 섭외한 공연 팀의 수
+		// l: 이미 섭외한 공연 팀의 수
 		int n, l;	cin >> n >> l;
 
 		// 공연장 대여 비용 저장 
-		vector<int> vec(n + 1);
+		vector<int> hall(n + 1);
 
-		// index: 0 0으로 초기화
-		vec[0] = 0;
+		// index: [0] 0으로 초기화
+		hall[0] = 0;
+
 		for (int idx = 1; idx <= n; idx++)
 		{
 			// 공연장 대여 비용 입력
-			int num;	cin >> num;
+			int cost;	cin >> cost;
 
-			// current index : vec[0] + vec[1] + vec[idx] ...
-			vec[idx] = vec[idx - 1] + num;
+			// current index : vec[0] + vec[1] + ... + vec[idx]
+			hall[idx] = hall[idx - 1] + cost;
 		}
 
 		// output answer
 		double answer = 1234567890.0;
 
-
-		for (int i = l; i <= n; i++)
+		for (int day = l; day <= n; day++)
 		{
-			for (int j = 0; i + j <= n; j++)
+			for (int index = 0; day + index <= n; index++)
 			{
 				// temp sum
-				double sum = ((double)vec[i + j] - (double)vec[j]) / i;
+				double sum = ((double)hall[day + index] - (double)hall[index]) / day;
 
 				// 최솟값 찾기
 				answer = min(sum, answer);
