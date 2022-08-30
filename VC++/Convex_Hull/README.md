@@ -20,12 +20,11 @@ ccw>0이 되었을 때만 스택에 넣어주면 된다.<br>
 3) CCW(1, 2, 3) = 0 : 3개의 점이 일직선상에 있음<br>
 
 <h3> 실행과정 </h3><hr>
-1. 랜덤의 100개 점 생성<br>
 
+1. 랜덤의 100개 점 생성<br>
 ![image](https://user-images.githubusercontent.com/69779719/187389788-e0cd2a5e-a0b1-4965-bbc1-4a81ef782529.png)
 
 2. 볼록 껍질 생성<br>
-
 ![image](https://user-images.githubusercontent.com/69779719/187389904-aa445c2d-ecc7-4f34-b49a-21ffd9717355.png)
 
 <h3> 사용기술 </h3> <hr>
